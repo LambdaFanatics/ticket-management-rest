@@ -6,7 +6,7 @@ import scala.collection.mutable.{Map => MMap}
 
 import cats.syntax.either._
 
-object InMemoryTicketRepository extends TicketRepository {
+case class InMemoryTicketRepository() extends TicketRepository {
   lazy val internal = MMap.empty[String, Ticket]
 
   override def query(no: String): Either[String, Option[Ticket]] =

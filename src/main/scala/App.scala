@@ -3,11 +3,10 @@ import java.util.Date
 import repository.interpreter.{FailingTicketRepository, InMemoryTicketRepository}
 import service.interpreter.TicketServiceInterpreter
 
-// WHAT ABOUT THESE
+// WHAT ABOUT THESE ???
 import cats.instances.future._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 
 object App extends App {
 
@@ -37,7 +36,7 @@ object App extends App {
 
 
   //FIXME write tests
-  val repo = FailingTicketRepository // try also with `FailingTicketRepository`
+  val repo = InMemoryTicketRepository() // try also with `FailingTicketRepository`
 
   val allValidRes = prog1.run(repo) //Should update the repository
 
@@ -53,6 +52,6 @@ object App extends App {
   println(s"create and update ticket 1 res= $start1")
   println(s"create and update ticket 4 res= $start4")
 
-//  println(repo.internal)
+  println(repo.internal)
 
 }

@@ -17,6 +17,7 @@ import scala.concurrent.Future
   */
 object TicketServiceInterpreter extends TicketService {
 
+
   def open(no: String, title: String): TicketOperation[Ticket] = Kleisli[AsyncErrorOr, TicketRepository, Ticket]  {
     (repo: TicketRepository) =>
       EitherT {
