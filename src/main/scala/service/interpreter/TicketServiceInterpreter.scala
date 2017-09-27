@@ -11,7 +11,6 @@ import service.TicketService
 import scala.concurrent.Future
 
 // FIXME model errors correctly
-// FIXME start changeTitle close duplication
 /**
   * Ticket service implementation (interpreter).
   */
@@ -22,6 +21,8 @@ object TicketServiceInterpreter extends TicketService {
     (repo: TicketRepository) =>
       EitherT {
         Future.successful {
+
+          // **  Update is not working here (WHY?) **
           repo.query(no) match {
 
             //This is error translation
@@ -37,7 +38,6 @@ object TicketServiceInterpreter extends TicketService {
             //Repository error
             case Left(error) =>
               NonEmptyList.of(s"Failed to open ticket ($no)", error).asLeft[Ticket]
-
           }
         }
       }
@@ -48,17 +48,22 @@ object TicketServiceInterpreter extends TicketService {
     (repo: TicketRepository) =>
       EitherT {
         Future.successful {
-          repo.query(no) match {
-            case Right(None) => one(s"Ticket ($no) does not exist").asLeft[Ticket]
 
-            case Right(Some(t)) =>
-              val changed = t.copy(status = InProgress)
-              repo.store(changed)
-                .left.map(error => NonEmptyList.of(s"Failed to start ticket ($no)", error))
+          repo.update(no)(t => t.copy(status = InProgress).asRight)
+            .leftMap( error => NonEmptyList.of(s"Failed to start ticket ($no)", error))
 
-            //Repository error
-            case Left(error) => NonEmptyList.of(s"Failed to start ticket ($no)", error).asLeft[Ticket]
-          }
+          // TODO remove kept here for educational purposes
+//          repo.query(no) match {
+//            case Right(None) => one(s"Ticket ($no) does not exist").asLeft[Ticket]
+//
+//            case Right(Some(t)) =>
+//              val changed = t.copy(status = InProgress)
+//              repo.store(changed)
+//                .left.map(error => NonEmptyList.of(s"Failed to start ticket ($no)", error))
+//
+//            //Repository error
+//            case Left(error) => NonEmptyList.of(s"Failed to start ticket ($no)", error).asLeft[Ticket]
+//          }
         }
       }
   }
@@ -67,17 +72,21 @@ object TicketServiceInterpreter extends TicketService {
     (repo: TicketRepository) =>
       EitherT {
         Future.successful {
-          repo.query(no) match {
-            case Right(None) => one(s"Ticket ($no) does not exist").asLeft[Ticket]
+          repo.update(no)(t => t.copy(title = title).asRight)
+              .leftMap( error => NonEmptyList.of(s"Failed to change title of ticket ($no)", error))
 
-            case Right(Some(t)) =>
-              val changed = t.copy(title = title)
-              repo.store(changed)
-                .left.map(error => NonEmptyList.of(s"Failed to change title of ticket ($no)", error))
-
-            //Repository error
-            case Left(error) => NonEmptyList.of(s"Failed to change title of ticket ($no)", error).asLeft[Ticket]
-          }
+            // TODO remove kept here for educational purposes
+//          repo.query(no) match {
+//            case Right(None) => one(s"Ticket ($no) does not exist").asLeft[Ticket]
+//
+//            case Right(Some(t)) =>
+//              val changed = t.copy(title = title)
+//              repo.store(changed)
+//                .left.map(error => NonEmptyList.of(s"Failed to change title of ticket ($no)", error))
+//
+//            //Repository error
+//            case Left(error) => NonEmptyList.of(s"Failed to change title of ticket ($no)", error).asLeft[Ticket]
+//          }
         }
       }
   }
@@ -86,17 +95,22 @@ object TicketServiceInterpreter extends TicketService {
     (repo: TicketRepository) =>
       EitherT {
         Future.successful {
-          repo.query(no) match {
-            case Right(None) => one(s"Ticket ($no) does not exist").asLeft[Ticket]
 
-            case Right(Some(t)) =>
-              val changed = t.copy(status = Closed)
-              repo.store(changed)
-                .left.map(error => NonEmptyList.of(s"Failed to close ticket ($no)", error))
+          repo.update(no)(t => t.copy(status = Closed).asRight)
+            .leftMap( error => NonEmptyList.of(s"Failed to close ticket ($no)", error))
 
-            //Repository error
-            case Left(error) => NonEmptyList.of(s"Failed to close ticket ($no)", error).asLeft[Ticket]
-          }
+          // TODO remove kept here for educational purposes
+//          repo.query(no) match {
+//            case Right(None) => one(s"Ticket ($no) does not exist").asLeft[Ticket]
+//
+//            case Right(Some(t)) =>
+//              val changed = t.copy(status = Closed)
+//              repo.store(changed)
+//                .left.map(error => NonEmptyList.of(s"Failed to close ticket ($no)", error))
+//
+//            //Repository error
+//            case Left(error) => NonEmptyList.of(s"Failed to close ticket ($no)", error).asLeft[Ticket]
+//          }
         }
       }
   }

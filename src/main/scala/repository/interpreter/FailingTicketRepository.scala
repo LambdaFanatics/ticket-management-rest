@@ -10,4 +10,6 @@ object FailingTicketRepository extends TicketRepository {
   override def query(no: String): Either[String, Option[Ticket]] = "Storage unavailable".asLeft[Option[Ticket]]
 
   override def store(t: Ticket): Either[String, Ticket] = "Storage unavailable".asLeft[Ticket]
+
+  override def update(no: String)(operation: (Ticket) => Either[String, Ticket]) = "Storage unavailable".asLeft[Ticket]
 }
