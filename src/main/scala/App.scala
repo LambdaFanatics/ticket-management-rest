@@ -3,7 +3,7 @@ import java.util.Date
 import repository.interpreter.{FailingTicketRepository, InMemoryTicketRepository}
 import service.interpreter.TicketServiceInterpreter
 
-// WHAT ABOUT THESE ???
+//FIXME compiler seems a little bit unstable with these
 import cats.instances.future._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,7 +35,6 @@ object App extends App {
   } yield t
 
 
-  //FIXME write tests
   val repo = InMemoryTicketRepository() // try also with `FailingTicketRepository`
 
   val allValidRes = prog1.run(repo) //Should update the repository

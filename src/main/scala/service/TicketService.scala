@@ -4,8 +4,6 @@ import cats.data.Kleisli
 import model.{Ticket, AsyncErrorOr}
 import repository.TicketRepository
 
-
-
 trait TicketService {
   type TicketOperation[A] = Kleisli[AsyncErrorOr, TicketRepository, A]
 
