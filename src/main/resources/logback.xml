@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <appender name="FILELOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./gojira.log</File>
+        <encoder>
+            <pattern>[%p] %d{dd MM yyyy HH:mm:ss} %X{akkaSource} %X{sourceThread} [%c] %m%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <maxIndex>5</maxIndex>
+            <FileNamePattern>./flink-tools.log.%i</FileNamePattern>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>4MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="FILELOG"/>
+    </root>
+</configuration>
