@@ -17,14 +17,21 @@ libraryDependencies ++= Seq(
 
   "com.typesafe.akka" %% "akka-http-testkit" % "10.0.10" % Test,
 
-  //Transient dependcies from akka http (here for educational purposes)
+  //Transient dependencies from akka http (here for educational purposes)
+
   //  "com.typesafe.akka" %% "akka-actor" % "2.4.19",
   //  "com.typesafe.akka" % "akka-stream" % "2.4.19",
 
   //Logging
   "ch.qos.logback"    % "logback-classic" % "1.2.3",
 
-  "com.typesafe.akka" %% "akka-slf4j" % "2.4.20"
+  "com.typesafe.akka" %% "akka-slf4j" % "2.4.20",
+
+  //Json library (encode/decode)
+  "io.circe" %% "circe-core" % "0.8.0",
+  "io.circe" %% "circe-generic" % "0.8.0",
+  "io.circe" %% "circe-parser" % "0.8.0",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.18.0"
 )
 
 

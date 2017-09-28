@@ -10,9 +10,12 @@ The available tags are:
 * __step1__: Initial scaffolding and base project structure. 
 Contains algebra implementation with in memory and failing repository
 
-* __step2__: Reviewing the repository api and improving it (removing duπlication)
+* __step2__: Reviewing the repository api and improving it (see `TicketServiceInterpreter.scala`)
 
-* __step3__: Introducing akka http
+* __step3__: Introducing akka-http (see `logback.xml`, `application.conf`, `build.sbt`)
+
+* __step4__: Creating rest api interface  using akka-http (see `Server.scala` and `worksheets/circe.sc`) 
+
 
 _Note:_ step1, step2 ... are tag names 
 
