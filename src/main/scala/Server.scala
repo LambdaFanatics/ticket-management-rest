@@ -1,11 +1,10 @@
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import akka.stream.ActorMaterializer
+import repository.interpreter.InMemoryTicketRepository
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -16,6 +15,10 @@ object Server extends App {
 
   val logger = Logging(system, getClass)
 
+  //Initialize the in memory repository
+  val repo = InMemoryTicketRepository()
+
+
 
   //TODO move this for here (avoid DTOs?)
   case class TicketData(title: String)
@@ -24,27 +27,36 @@ object Server extends App {
   val routes: Route = {
     import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
     import io.circe.generic.auto._
+    import service.interpreter.TicketServiceInterpreter._
+
 
     pathPrefix("api" / "ticket") {
       path(IntNumber / "open") { no =>
         put {
           entity(as[TicketData]) { input =>
-            complete(s"ticket ($no, '${input.title}') opened.")
+            complete {
+              open(no.toString, input.title)(repo).value
+            }
+
           }
         }
       } ~ path(IntNumber / "start") { no =>
         put {
-          complete(s"ticket ($no) started.")
+          complete {
+            start(no.toString)(repo).value
+          }
         }
       } ~ path(IntNumber / "title") { no =>
         put {
           entity(as[TicketData]) { input =>
-            complete(s"ticket ($no) title changed to '${input.title}'.")
+            complete {
+              changeTitle(no.toString, input.title)(repo).value
+            }
           }
         }
       } ~ path(IntNumber / "close") { no =>
         put {
-          complete(s"ticket ($no) closed.")
+          complete(close(no.toString)(repo).value)
         }
       }
     }

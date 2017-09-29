@@ -5,7 +5,7 @@ This is done for educational purposes.
 
 Navigate through the tags (via `git checkout`) and study the code.
 
-The available tags are:
+The available __tags__ are:
 
 * __step1__: Initial scaffolding and base project structure. 
 Contains algebra implementation with in memory and failing repository
@@ -16,6 +16,5 @@ Contains algebra implementation with in memory and failing repository
 
 * __step4__: Creating rest api interface  using akka-http (see `Server.scala` and `worksheets/circe.sc`) 
 
-
-_Note:_ step1, step2 ... are tag names 
+* __step5__: Integrating the ticket service using an in memory repository (see `Server.scala`)
 
