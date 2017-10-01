@@ -28,7 +28,7 @@ object Server extends App {
     import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
     import io.circe.generic.auto._
     import service.interpreter.TicketServiceInterpreter._
-
+    import model.Codecs._
 
     pathPrefix("api" / "ticket") {
       path(IntNumber / "open") { no =>

@@ -27,6 +27,12 @@ libraryDependencies ++= Seq(
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.20",
 
+  //Slick & H2
+  "com.h2database"      % "h2"              % "1.4.185",
+  "com.typesafe.slick" %% "slick"           % "3.2.1",
+
+
+
   //Json library (encode/decode)
   "io.circe" %% "circe-core" % "0.8.0",
   "io.circe" %% "circe-generic" % "0.8.0",

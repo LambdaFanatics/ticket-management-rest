@@ -18,3 +18,4 @@ Contains algebra implementation with in memory and failing repository
 
 * __step5__: Integrating the ticket service using an in memory repository (see `Server.scala`)
 
+* __step6__: Introducing slick with H2Database drivers (see `slick.sc`, `build.sbt`).

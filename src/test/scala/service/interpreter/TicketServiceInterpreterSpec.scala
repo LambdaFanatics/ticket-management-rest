@@ -2,7 +2,7 @@ package service.interpreter
 
 import cats.data.NonEmptyList
 import cats.instances.future._
-import model.{InProgress, Open, Ticket}
+import model.{Ticket, TicketStatus}
 import org.scalatest.{AsyncFunSpec, BeforeAndAfterEach, Matchers}
 import repository.interpreter.{FailingTicketRepository, InMemoryTicketRepository}
 
@@ -54,7 +54,7 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers with Befor
 
 
       assert(repo.internal.isEmpty === false)
-      res.value.map(res => res should be(Right(Ticket("1", "T1", InProgress, Seq()))))
+      res.value.map(res => res should be(Right(Ticket("1", "T1", TicketStatus.InProgress, Seq()))))
     }
 
     it("Should open and change title of an valid ticket") {
@@ -66,7 +66,7 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers with Befor
       val res = command.run(repo)
 
       assert(repo.internal.isEmpty === false)
-      res.value.map(res => res should be(Right(Ticket("1", "CHANGE", Open, Seq()))))
+      res.value.map(res => res should be(Right(Ticket("1", "CHANGE", TicketStatus.Open, Seq()))))
     }
 
     //Here more tests ... you are welcome to try!

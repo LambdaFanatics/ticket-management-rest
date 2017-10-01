@@ -1,7 +1,6 @@
+/** Expreriments of using circe.io*/
 import io.circe.{Decoder, Encoder}
 import io.circe.syntax._
-
-
 
 //Basic usage of cicre
 val ints = List(1,2,3).asJson

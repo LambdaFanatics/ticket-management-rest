@@ -32,7 +32,7 @@ object TicketServiceInterpreter extends TicketService {
             case Right(None) =>
               if (no.isEmpty || title.isEmpty)
                 one(s"Ticket open no and title required").asLeft[Ticket]
-              else repo.store(Ticket(no, title, Open, Seq()))
+              else repo.store(Ticket(no, title, TicketStatus.Open, Seq()))
                 .left.map(error => NonEmptyList.of(s"Failed to open ticket ($no)", error))
 
             //Repository error
@@ -48,7 +48,7 @@ object TicketServiceInterpreter extends TicketService {
     (repo: TicketRepository) =>
       EitherT {
         Future.successful {
-          repo.update(no)(t => t.copy(status = InProgress).asRight)
+          repo.update(no)(t => t.copy(status = TicketStatus.InProgress).asRight)
             .leftMap(error => NonEmptyList.of(s"Failed to start ticket ($no)", error))
         }
       }
@@ -69,7 +69,7 @@ object TicketServiceInterpreter extends TicketService {
       EitherT {
         Future.successful {
 
-          repo.update(no)(t => t.copy(status = Closed).asRight)
+          repo.update(no)(t => t.copy(status = TicketStatus.Closed).asRight)
             .leftMap(error => NonEmptyList.of(s"Failed to close ticket ($no)", error))
         }
       }
