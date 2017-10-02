@@ -1,46 +1,45 @@
 /** Expreriments of using slick */
 
-import model.{Comment, Ticket, TicketStatus}
-import slick.ast.BaseTypedType
-import slick.jdbc.JdbcType
-
-
-Ticket("100", "Ticket 1", TicketStatus.Open, Seq(Comment("This is my first task"), Comment("And I can comment on it")))
-
+import model.{Ticket, TicketStatus}
+import repository.interpreter.db.tickets
+import slick.jdbc.H2Profile
 import slick.jdbc.H2Profile.api._
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
-val db = Database.forURL("jdbc:h2:mem:ticketdb;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+val db: H2Profile.backend.DatabaseDef = Database.forURL("jdbc:h2:mem:ticketdb;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+
+val data = Seq(
+  Ticket("1", "Ticket 1", TicketStatus.Open, Seq()),
+  Ticket("2", "Ticket 1", TicketStatus.Open, Seq()),
+  Ticket("100", "Ticket 1", TicketStatus.Open, Seq())
+)
+
+def exec[T](program: DBIO[T]): T = Await.result(db.run(program), 2 seconds)
 
 
-implicit val ticketStatusColumn: JdbcType[TicketStatus] with BaseTypedType[TicketStatus] = MappedColumnType.base[TicketStatus, String](_.toString, {
-  case "Open" => TicketStatus.Open
-  case "InProgress" => TicketStatus.InProgress
-  case _ => TicketStatus.Closed
-})
+import scala.concurrent.ExecutionContext.Implicits.global
 
-
-final class TicketTable(tag: Tag) extends Table[Ticket](tag, "ticket") {
-
-  def no = column[String]("no", O.PrimaryKey)
-
-  def title = column[String]("title")
-
-  def status = column[TicketStatus]("status")
-
-  //Mapping ticket row tuple to Ticket model class
-  //Ignoring commends for now
-  type RowTuple = (String, String, TicketStatus)
-
-  private def constructTicket: RowTuple => Ticket = {
-    case (no, title, status) => Ticket(no, title, status, Seq())
-  }
-
-  private def extractTicket: PartialFunction[Ticket, RowTuple] = {
-    case Ticket(no, title, status, _) => (no, title, status)
-  }
-
-  def * = (no, title, status) <> (constructTicket, extractTicket.lift)
+def populate: DBIO[Option[Int]] = {
+  for {
+    _ <- tickets.schema.drop.asTry andThen tickets.schema.create
+    count <- tickets ++= data
+  } yield count
 }
 
-lazy val tickets = TableQuery[TicketTable]
+def all: DBIO[Seq[Ticket]]= tickets.result
+
+val q1 = tickets
+  .filter( _.no === "1")
+  .map(_.title)
+  .update("FOO")
+
+
+
+try {
+  exec(populate)
+
+  exec({q1 andThen all}.transactionally)
+} catch  { case ex:Exception => ex}
+finally db.close
