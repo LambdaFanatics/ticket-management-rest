@@ -1,13 +1,15 @@
 package repository.interpreter
 
 import model.TicketStatus
-import slick.jdbc.JdbcType
-import slick.lifted.TableQuery
+import slick.jdbc.{JdbcProfile, JdbcType}
 import slick.ast.BaseTypedType
-
 import slick.jdbc.H2Profile.api._
 
 package object db {
+
+  trait Profile {
+    val profile: slick.jdbc.JdbcProfile
+  }
 
   implicit val ticketStatusColumn: JdbcType[TicketStatus] with BaseTypedType[TicketStatus] = MappedColumnType.base[TicketStatus, String](_.toString, {
     case "Open" => TicketStatus.Open
@@ -15,7 +17,7 @@ package object db {
     case _ => TicketStatus.Closed
   })
 
-  lazy val tickets = TableQuery[TicketTable]
+  case class DatabaseLayer(profile: JdbcProfile) extends Profile with Tables
 }
 
 

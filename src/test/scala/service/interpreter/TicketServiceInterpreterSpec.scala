@@ -3,10 +3,11 @@ package service.interpreter
 import cats.data.NonEmptyList
 import cats.instances.future._
 import model.{Ticket, TicketStatus}
-import org.scalatest.{AsyncFunSpec, BeforeAndAfterEach, Matchers}
+import org.scalatest.{AsyncFunSpec, FunSpec, Matchers}
 import repository.interpreter.{FailingTicketRepository, InMemoryTicketRepository}
 
-class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers with BeforeAndAfterEach {
+
+class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
 
   private val service = TicketServiceInterpreter
 
@@ -19,19 +20,22 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers with Befor
       } yield t
       command.run(repo)
 
-      assert(repo.internal.size === 1)
       repo.internal.get("1").map(_.no) should be(Some("1"))
     }
 
-    it("Should respond with an message on invalid ticket") {
+    it("Should fail with errors on invalid ticket") {
       val repo = InMemoryTicketRepository()
       val command = for {
         t <- service.open("", "")
       } yield t
       val res = command.run(repo)
 
-      assert(repo.internal.isEmpty)
-      res.value.map(res => res should matchPattern { case Left(NonEmptyList(_, _)) => })
+
+      res.value
+        .map(
+          res => res should matchPattern { case Left(NonEmptyList("Failed to open ticket ()", Seq("Ticket open no and title required"))) => }
+        )
+        .map(_ => assert(repo.internal.isEmpty))
     }
 
     it("Should fail when repo fails") {
@@ -41,7 +45,10 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers with Befor
       } yield t
       val res = command.run(repo)
 
-      res.value.map(res => res should matchPattern { case Left(NonEmptyList(_, _)) => })
+      res.value.map(res =>
+        res should matchPattern { case Left(NonEmptyList("Failed to open ticket (1)", Seq("Storage unavailable"))) => }
+      )
+
     }
 
     it("Should open and start a valid ticket") {
@@ -53,20 +60,40 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers with Befor
       val res = command.run(repo)
 
 
-      assert(repo.internal.isEmpty === false)
-      res.value.map(res => res should be(Right(Ticket("1", "T1", TicketStatus.InProgress, Seq()))))
+
+      res.value
+        .map(res => res should be(Right(Ticket("1", "T1", TicketStatus.InProgress, Seq()))))
+        .map(_ => assert(repo.internal.nonEmpty))
     }
 
-    it("Should open and change title of an valid ticket") {
+    it("Should open and start and close a valid ticket") {
       val repo = InMemoryTicketRepository()
       val command = for {
         t <- service.open("1", "T1")
-        opened <- service.changeTitle(t.no, "CHANGE")
+        opened <- service.start(t.no)
+        closed <- service.close(opened.no)
+      } yield closed
+      val res = command.run(repo)
+
+      res.value
+        .map(res => res should be(Right(Ticket("1", "T1", TicketStatus.Closed, Seq()))))
+        .map(_ => assert(repo.internal.nonEmpty))
+    }
+
+
+    it("Should fail with errors when trying to close non existed ticket") {
+      val repo = InMemoryTicketRepository()
+      val command = for {
+        opened <- service.changeTitle("2", "CHANGE")
       } yield opened
       val res = command.run(repo)
 
-      assert(repo.internal.isEmpty === false)
-      res.value.map(res => res should be(Right(Ticket("1", "CHANGE", TicketStatus.Open, Seq()))))
+      res.value
+        .map(res => {
+          res should matchPattern { case Left(NonEmptyList("Failed to change title of ticket (2)", Seq("Ticket (2) does not exist"))) => }
+        })
+        .map(_ => assert(repo.internal.isEmpty))
+
     }
 
     //Here more tests ... you are welcome to try!
