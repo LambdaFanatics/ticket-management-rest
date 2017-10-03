@@ -21,12 +21,10 @@ object Server extends App {
   databaseLayer.exec(databaseLayer.populate)
 
 
-  //Initialize the in memory repository
+  //Initialize ticket repository
   val repo = DbTicketRepository(databaseLayer)
 
-
-
-  //TODO move this for here (avoid DTOs?)
+  // A request data DTO
   case class TicketData(title: String)
 
   //Sample rest http dsl usage
