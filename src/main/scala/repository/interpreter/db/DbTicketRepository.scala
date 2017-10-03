@@ -38,22 +38,22 @@ case class DbTicketRepository(dl: DatabaseLayer) extends TicketRepository {
 
   def findAll() = EitherT {
     db.run(findAllAction())
-        .recover {case ex: Exception => one(StorageRetrieveError).asLeft}
+        .recover {case _: Exception => one(StorageRetrieveError).asLeft}
   }
 
   def query(no: String) = EitherT {
     db.run(findAction(no))
-      .recover {case ex: Exception => one(StorageRetrieveError).asLeft}
+      .recover {case _: Exception => one(StorageRetrieveError).asLeft}
   }
 
   def store(ticket: Ticket) = EitherT{
     db.run(storeAction(ticket))
-      .recover { case ex: Exception => one(StorageCreateError).asLeft}
+      .recover { case _: Exception => one(StorageCreateError).asLeft}
   }
 
   def update(no: String)(f: Ticket => EitherNel[Error, Ticket]) = EitherT {
     db.run(updateAction(no)(f).transactionally)
-        .recover {case ex: Exception => one(StorageUpdateError).asLeft}
+        .recover {case _: Exception => one(StorageUpdateError).asLeft}
   }
 }
 

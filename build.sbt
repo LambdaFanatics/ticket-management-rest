@@ -31,13 +31,10 @@ libraryDependencies ++= Seq(
   "com.h2database"      % "h2"              % "1.4.185",
   "com.typesafe.slick" %% "slick"           % "3.2.1",
 
-
-
   //Json library (encode/decode)
-  "io.circe" %% "circe-core" % "0.8.0",
-  "io.circe" %% "circe-generic" % "0.8.0",
-  "io.circe" %% "circe-parser" % "0.8.0",
-  "de.heikoseeberger" %% "akka-http-circe" % "1.18.0"
+  "io.spray" %% "spray-json" % "1.3.3",
+  "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10"
+
 )
 
 

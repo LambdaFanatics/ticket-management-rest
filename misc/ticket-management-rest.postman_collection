@@ -3,6 +3,7 @@
 	"name": "ticket-management-rest",
 	"description": "",
 	"order": [
+		"3b65abca-45e8-5927-11ba-d4edec93f946",
 		"e1620e4a-57fd-d30f-7a38-c8ecd3fc6d8e",
 		"eeb13488-92fc-460c-3b13-da41babd9d99",
 		"03303512-085b-1029-6c72-a0d41b640462",
@@ -37,12 +38,41 @@
 			"tests": null,
 			"currentHelper": "normal",
 			"helperAttributes": {},
-			"time": 1507025483549,
+			"time": 1507033346703,
 			"name": "Change ticket title",
 			"description": "Change ticket title",
 			"collectionId": "01201690-e3c2-7bbe-0eee-9b461b22019e",
 			"responses": [],
-			"rawModeData": "{title: \"Another title\"}"
+			"rawModeData": "{\"title\": \"Another title 2\"}"
+		},
+		{
+			"id": "3b65abca-45e8-5927-11ba-d4edec93f946",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8700/api/ticket",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "GET",
+			"data": [],
+			"dataMode": "raw",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1507029674533,
+			"name": "Find all tickets",
+			"description": "Find all tickets",
+			"collectionId": "01201690-e3c2-7bbe-0eee-9b461b22019e",
+			"responses": [],
+			"rawModeData": ""
 		},
 		{
 			"id": "acd73b1e-1cdc-a7d2-9045-edcee1bc5fcc",

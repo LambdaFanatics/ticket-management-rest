@@ -17,8 +17,6 @@ import scala.concurrent.Future
   * Ticket service implementation (interpreter).
   */
 object TicketServiceInterpreter extends TicketService {
-
-
   override def findAll(): TicketOperation[Seq[Ticket]] =  Kleisli[AsyncErrorOr, TicketRepository, Seq[Ticket]] {
     (repo: TicketRepository) => repo.findAll().leftMap(error => TicketRetrieveError ::  error)
   }
@@ -31,15 +29,12 @@ object TicketServiceInterpreter extends TicketService {
             case Some(_) => EitherT(Future.successful(one(EntityExistsError).asLeft[Ticket])): AsyncErrorOr[Ticket]
             case None =>
               if(no.isEmpty || title.isEmpty)
-
-                //FIXME Specific validation error
                 EitherT(Future.successful(one(TicketValidateError).asLeft[Ticket])): AsyncErrorOr[Ticket]
               else repo.store(Ticket(no, title, TicketStatus.Open, Seq()))
           }
           .leftMap(error => TicketOpenError :: error)
 
   }
-
 
   def start(no: String): TicketOperation[Ticket] = Kleisli[AsyncErrorOr, TicketRepository, Ticket] {
     (repo: TicketRepository) =>

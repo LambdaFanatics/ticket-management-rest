@@ -1,8 +1,7 @@
 package model
 
 object Errors {
-  sealed abstract class Error(code: Int, message: String) {
-  }
+  sealed abstract class Error(val code: Int, val message: String)
 
   case object GenericError extends Error(0, "Application generic error")
 

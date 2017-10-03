@@ -4,9 +4,15 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
+import model.{Comment, Ticket, TicketStatus}
+import model.request.TicketRequest
 import repository.interpreter.db.{DatabaseLayer, DbTicketRepository}
 
-import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.{ExecutionContextExecutor}
+import spray.json._
+import model.Codecs._
+
+
 
 object Server extends App {
   implicit val system: ActorSystem = ActorSystem()
@@ -25,49 +31,51 @@ object Server extends App {
   //Initialize ticket repository
   val repo = DbTicketRepository(databaseLayer)
 
-  // A request data DTO
-  case class TicketData(title: String)
+
 
   //Sample rest http dsl usage
   val routes: Route = {
-    import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
-    import io.circe.generic.auto._
+
+
+
+
+
     import service.interpreter.TicketServiceInterpreter._
-    import model.Codecs._
+    import cats.syntax.either._
 
     pathPrefix("api" / "ticket") {
       pathEnd {
         get {
           complete {
-            findAll()(repo).value
-          }
-        }
-      } ~ path(IntNumber / "open") { no =>
-        put {
-          entity(as[TicketData]) { input =>
-            complete {
-              open(no.toString, input.title)(repo).value
-            }
 
+            findAll()(repo).value.map(_.leftMap(_.toList).toJson)
           }
         }
       } ~ path(IntNumber / "start") { no =>
         put {
           complete {
-            start(no.toString)(repo).value
+            start(no.toString)(repo).value.map(_.leftMap(_.toList).toJson)
+          }
+        }
+      } ~ path(IntNumber / "open") { no =>
+        put {
+          entity(as[TicketRequest]) { input =>
+            complete {
+              open(no.toString, input.title)(repo).value.map(_.leftMap(_.toList).toJson)
+            }
           }
         }
       } ~ path(IntNumber / "title") { no =>
         put {
-          entity(as[TicketData]) { input =>
+          entity(as[TicketRequest]) { input =>
             complete {
-              changeTitle(no.toString, input.title)(repo).value
+              changeTitle(no.toString, input.title)(repo).value.map(_.leftMap(_.toList).toJson)
             }
           }
         }
       } ~ path(IntNumber / "close") { no =>
         put {
-          complete(close(no.toString)(repo).value)
+          complete(close(no.toString)(repo).value.map(_.leftMap(_.toList).toJson))
         }
       }
     }
