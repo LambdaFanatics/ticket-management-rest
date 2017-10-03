@@ -17,6 +17,7 @@ object Server extends App {
 
   val databaseLayer = DatabaseLayer(slick.jdbc.H2Profile, "database")
 
+  logger.info("Populating database")
   //Recreate populate database
   databaseLayer.exec(databaseLayer.populate)
 
@@ -66,6 +67,7 @@ object Server extends App {
     }
   }
 
+  logger.info("Starting server")
   val (host, port) = ("localhost", 8700)
   val bindingFuture = Http().bindAndHandle(routes, host, port)
 
