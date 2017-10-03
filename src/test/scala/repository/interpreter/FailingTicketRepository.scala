@@ -11,6 +11,8 @@ import scala.concurrent.Future
 
 object FailingTicketRepository extends TicketRepository {
 
+  def findAll() = EitherT.left[Seq[Ticket]](Future.successful(one("Storage unavailable")))
+
   override def query(no: String): AsyncErrorOr[Option[Ticket]] =
     EitherT.left[Option[Ticket]](Future.successful(one("Storage unavailable")))
     //OR more explicitly

@@ -36,7 +36,13 @@ object Server extends App {
     import model.Codecs._
 
     pathPrefix("api" / "ticket") {
-      path(IntNumber / "open") { no =>
+      pathEnd {
+        get {
+          complete {
+            findAll()(repo).value
+          }
+        }
+      } ~ path(IntNumber / "open") { no =>
         put {
           entity(as[TicketData]) { input =>
             complete {

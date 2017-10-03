@@ -30,7 +30,6 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
       } yield t
       val res = command.run(repo)
 
-
       res.value
         .map(
           res => res should matchPattern { case Left(NonEmptyList("Failed to open ticket ()", Seq("Ticket open no and title required"))) => }
@@ -48,7 +47,6 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
       res.value.map(res =>
         res should matchPattern { case Left(NonEmptyList("Failed to open ticket (1)", Seq("Storage unavailable"))) => }
       )
-
     }
 
     it("Should open and start a valid ticket") {
@@ -58,8 +56,6 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
         opened <- service.start(t.no)
       } yield opened
       val res = command.run(repo)
-
-
 
       res.value
         .map(res => res should be(Right(Ticket("1", "T1", TicketStatus.InProgress, Seq()))))
@@ -93,9 +89,22 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
           res should matchPattern { case Left(NonEmptyList("Failed to change title of ticket (2)", Seq("Ticket (2) does not exist"))) => }
         })
         .map(_ => assert(repo.internal.isEmpty))
-
     }
 
+    it("Should open multiple valid tickets and fetch them correctly") {
+      val repo = InMemoryTicketRepository()
+      val command = for {
+        _ <- service.open("1","T1")
+        _ <- service.open("12","T12")
+        _ <- service.open("2","T2")
+        tickets <- service.findAll()
+      } yield tickets
+
+      val res = command.run(repo)
+      res.value.map(res => assert(res.isRight))
+          .map(_ => assert(repo.internal.nonEmpty && repo.internal.size == 3))
+
+    }
     //Here more tests ... you are welcome to try!
   }
 

@@ -1,7 +1,7 @@
 package repository.interpreter
 
 import cats.data.NonEmptyList.one
-import cats.data.{EitherNel, EitherT, NonEmptyList}
+import cats.data.{EitherNel, EitherT}
 import cats.syntax.either._
 import model.{AsyncErrorOr, Ticket}
 import repository.TicketRepository
@@ -14,13 +14,18 @@ import scala.concurrent.Future
 case class InMemoryTicketRepository() extends TicketRepository {
   lazy val internal: MMap[String, Ticket] = MMap.empty[String, Ticket]
 
+
+  def findAll(): AsyncErrorOr[Seq[Ticket]] = EitherT {
+    Future.successful(internal.values.toSeq.asRight)
+  }
+
   def query(no: String): AsyncErrorOr[Option[Ticket]] =
-    EitherT { Future.successful(internal.get(no).asRight[NonEmptyList[String]]) }
+    EitherT { Future.successful(internal.get(no).asRight) }
 
 
   def store(t: Ticket): AsyncErrorOr[Ticket] = {
     internal += (t.no -> t)
-    EitherT(Future.successful(t.asRight[NonEmptyList[String]]))
+    EitherT(Future.successful(t.asRight))
   }
 
   def update(no: String)(operation: (Ticket) => EitherNel[String,Ticket]): AsyncErrorOr[Ticket] = EitherT {
@@ -29,7 +34,7 @@ case class InMemoryTicketRepository() extends TicketRepository {
         .flatMap(operation)
         .flatMap(t => {
           internal += (t.no -> t)
-          t.asRight[NonEmptyList[String]]
+          t.asRight
         })
     }
   }

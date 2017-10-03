@@ -19,6 +19,10 @@ import scala.concurrent.Future
 object TicketServiceInterpreter extends TicketService {
 
 
+  override def findAll(): TicketOperation[Seq[Ticket]] =  Kleisli[AsyncErrorOr, TicketRepository, Seq[Ticket]] {
+    (repo: TicketRepository) => repo.findAll().leftMap(error => s"Failed to find tickets" ::  error)
+  }
+
   def open(no: String, title: String): TicketOperation[Ticket] = Kleisli[AsyncErrorOr, TicketRepository, Ticket] {
     (repo: TicketRepository) =>
 
