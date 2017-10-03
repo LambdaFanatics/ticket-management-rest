@@ -3,7 +3,7 @@ package service.interpreter
 import cats.data.NonEmptyList
 import cats.instances.future._
 import model.{Ticket, TicketStatus}
-import org.scalatest.{AsyncFunSpec, FunSpec, Matchers}
+import org.scalatest.{AsyncFunSpec, Matchers}
 import repository.interpreter.{FailingTicketRepository, InMemoryTicketRepository}
 
 

@@ -21,3 +21,5 @@ Contains algebra implementation with in memory and failing repository
 * __step6__: Introducing slick with H2Database drivers (see `slick.sc`, `build.sbt`).
 
 * __step7__: Refactoring repository and service API (see `Repository`, `TicketServiceInterpreter`, `FailingTicketRepository`, `InMemoryTicketRepository`).
+
+* __step8__: Implementing the database repository using slick (see `DbTicketRepository`)

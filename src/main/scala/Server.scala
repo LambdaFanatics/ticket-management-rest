@@ -4,7 +4,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
-import repository.interpreter.InMemoryTicketRepository
+import repository.interpreter.db.{DatabaseLayer, DbTicketRepository}
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -15,8 +15,14 @@ object Server extends App {
 
   val logger = Logging(system, getClass)
 
+  val databaseLayer = DatabaseLayer(slick.jdbc.H2Profile, "database")
+
+  //Recreate populate database
+  databaseLayer.exec(databaseLayer.populate)
+
+
   //Initialize the in memory repository
-  val repo = InMemoryTicketRepository()
+  val repo = DbTicketRepository(databaseLayer)
 
 
 
