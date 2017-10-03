@@ -3,6 +3,7 @@ package repository.interpreter
 import cats.data.NonEmptyList.one
 import cats.data.{EitherNel, EitherT}
 import cats.syntax.either._
+import model.Errors.{Error, EntityMissingError}
 import model.{AsyncErrorOr, Ticket}
 import repository.TicketRepository
 
@@ -28,9 +29,9 @@ case class InMemoryTicketRepository() extends TicketRepository {
     EitherT(Future.successful(t.asRight))
   }
 
-  def update(no: String)(operation: (Ticket) => EitherNel[String,Ticket]): AsyncErrorOr[Ticket] = EitherT {
+  def update(no: String)(operation: (Ticket) => EitherNel[Error,Ticket]): AsyncErrorOr[Ticket] = EitherT {
     Future.successful {
-      Either.fromOption(internal.get(no), one(s"Ticket ($no) does not exist"))
+      Either.fromOption(internal.get(no), one(EntityMissingError))
         .flatMap(operation)
         .flatMap(t => {
           internal += (t.no -> t)

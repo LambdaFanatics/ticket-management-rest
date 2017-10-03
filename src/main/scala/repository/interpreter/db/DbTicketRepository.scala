@@ -5,6 +5,7 @@ import cats.data.{EitherNel, EitherT}
 import model.Ticket
 import repository.TicketRepository
 import cats.syntax.either._
+import model.Errors.{EntityMissingError, Error, StorageCreateError, StorageRetrieveError, StorageUpdateError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,20 +14,20 @@ case class DbTicketRepository(dl: DatabaseLayer) extends TicketRepository {
   import dl._
   import profile.api._
 
-  private def findAllAction(): DBIO[EitherNel[String,Seq[Ticket]]] =
+  private def findAllAction(): DBIO[EitherNel[Error,Seq[Ticket]]] =
     tickets.result.map(_.asRight)
 
-  private def findAction(no: String): DBIO[EitherNel[String,Option[Ticket]]] =
+  private def findAction(no: String): DBIO[EitherNel[Error,Option[Ticket]]] =
     tickets.filter(_.no === no).result.map(_.headOption.asRight)
 
-  private def storeAction(value: Ticket): DBIO[EitherNel[String,Ticket]] =
+  private def storeAction(value: Ticket): DBIO[EitherNel[Error,Ticket]] =
     (tickets += value).map(_ => value.asRight)
 
-  private def updateAction(no: String)(f: Ticket => EitherNel[String,Ticket]): DBIO[EitherNel[String,Ticket]] = {
+  private def updateAction(no: String)(f: Ticket => EitherNel[Error,Ticket]): DBIO[EitherNel[Error,Ticket]] = {
     //FIXME use forceInsert
     val updated = for {
       existing <- tickets.filter(_.no === no).result.headOption
-      either = Either.fromOption(existing, one(s"Database entry does not exist")).flatMap(t => f(t))
+      either = Either.fromOption(existing, one(EntityMissingError)).flatMap(t => f(t))
     } yield either
 
     updated.flatMap {
@@ -37,22 +38,22 @@ case class DbTicketRepository(dl: DatabaseLayer) extends TicketRepository {
 
   def findAll() = EitherT {
     db.run(findAllAction())
-        .recover {case ex: Exception => one(s"Database query error ${ex.getMessage}").asLeft}
+        .recover {case ex: Exception => one(StorageRetrieveError).asLeft}
   }
 
   def query(no: String) = EitherT {
     db.run(findAction(no))
-      .recover {case ex: Exception => one(s"Database query error ${ex.getMessage}").asLeft}
+      .recover {case ex: Exception => one(StorageRetrieveError).asLeft}
   }
 
   def store(ticket: Ticket) = EitherT{
     db.run(storeAction(ticket))
-      .recover { case ex: Exception => one(s"Database store error ${ex.getMessage}").asLeft}
+      .recover { case ex: Exception => one(StorageCreateError).asLeft}
   }
 
-  def update(no: String)(f: Ticket => EitherNel[String, Ticket]) = EitherT {
+  def update(no: String)(f: Ticket => EitherNel[Error, Ticket]) = EitherT {
     db.run(updateAction(no)(f).transactionally)
-        .recover {case ex: Exception => one(s"Database update error ${ex.getMessage}").asLeft}
+        .recover {case ex: Exception => one(StorageUpdateError).asLeft}
   }
 }
 

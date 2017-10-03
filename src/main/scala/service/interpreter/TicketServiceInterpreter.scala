@@ -5,6 +5,7 @@ import cats.data.NonEmptyList.one
 import cats.data.{EitherT, Kleisli}
 import cats.instances.future._
 import cats.syntax.either._
+import model.Errors._
 import model._
 import repository.TicketRepository
 import service.TicketService
@@ -12,7 +13,6 @@ import service.TicketService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-// FIXME model errors correctly
 /**
   * Ticket service implementation (interpreter).
   */
@@ -20,7 +20,7 @@ object TicketServiceInterpreter extends TicketService {
 
 
   override def findAll(): TicketOperation[Seq[Ticket]] =  Kleisli[AsyncErrorOr, TicketRepository, Seq[Ticket]] {
-    (repo: TicketRepository) => repo.findAll().leftMap(error => s"Failed to find tickets" ::  error)
+    (repo: TicketRepository) => repo.findAll().leftMap(error => TicketRetrieveError ::  error)
   }
 
   def open(no: String, title: String): TicketOperation[Ticket] = Kleisli[AsyncErrorOr, TicketRepository, Ticket] {
@@ -28,13 +28,15 @@ object TicketServiceInterpreter extends TicketService {
 
         repo.query(no)
           .flatMap {
-            case Some(_) => EitherT(Future.successful(one(s"Ticket ($no) already exists").asLeft[Ticket])): AsyncErrorOr[Ticket]
+            case Some(_) => EitherT(Future.successful(one(EntityExistsError).asLeft[Ticket])): AsyncErrorOr[Ticket]
             case None =>
               if(no.isEmpty || title.isEmpty)
-                EitherT(Future.successful(one(s"Ticket open no and title required").asLeft[Ticket])): AsyncErrorOr[Ticket]
+
+                //FIXME Specific validation error
+                EitherT(Future.successful(one(TicketValidateError).asLeft[Ticket])): AsyncErrorOr[Ticket]
               else repo.store(Ticket(no, title, TicketStatus.Open, Seq()))
           }
-          .leftMap(error => s"Failed to open ticket ($no)" ::  error)
+          .leftMap(error => TicketOpenError :: error)
 
   }
 
@@ -42,18 +44,18 @@ object TicketServiceInterpreter extends TicketService {
   def start(no: String): TicketOperation[Ticket] = Kleisli[AsyncErrorOr, TicketRepository, Ticket] {
     (repo: TicketRepository) =>
           repo.update(no)(t => t.copy(status = TicketStatus.InProgress).asRight)
-            .leftMap(error => s"Failed to start ticket ($no)" :: error)
+            .leftMap(error => TicketStartError :: error)
   }
 
   def changeTitle(no: String, title: String): TicketOperation[Ticket] = Kleisli[AsyncErrorOr, TicketRepository, Ticket] {
     (repo: TicketRepository) =>
           repo.update(no)(t => t.copy(title = title).asRight)
-            .leftMap(error => s"Failed to change title of ticket ($no)" :: error)
+            .leftMap(error => TicketChangeError :: error)
   }
 
   def close(no: String): TicketOperation[Ticket] = Kleisli[AsyncErrorOr, TicketRepository, Ticket] {
     (repo: TicketRepository) =>
           repo.update(no)(t => t.copy(status = TicketStatus.Closed).asRight)
-            .leftMap(error => s"Failed to close ticket ($no)" :: error)
+            .leftMap(error => TicketCloseError :: error)
   }
 }

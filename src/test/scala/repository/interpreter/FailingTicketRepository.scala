@@ -3,7 +3,8 @@ package repository.interpreter
 import cats.data.NonEmptyList.one
 import cats.data.{EitherNel, EitherT}
 import cats.instances.future._
-import model.{AsyncErrorOr, Ticket}
+import model.Errors.{GenericError, StorageCreateError, StorageRetrieveError, StorageUpdateError}
+import model.{AsyncErrorOr, Errors, Ticket}
 import repository.TicketRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,18 +12,14 @@ import scala.concurrent.Future
 
 object FailingTicketRepository extends TicketRepository {
 
-  def findAll() = EitherT.left[Seq[Ticket]](Future.successful(one("Storage unavailable")))
+  def findAll(): AsyncErrorOr[Seq[Ticket]] = EitherT.left[Seq[Ticket]](Future.successful(one(StorageRetrieveError)))
 
-  override def query(no: String): AsyncErrorOr[Option[Ticket]] =
-    EitherT.left[Option[Ticket]](Future.successful(one("Storage unavailable")))
-    //OR more explicitly
-    //    EitherT {
-    //      Future.successful(one("Storage unavailable").asLeft[Option[Ticket]])
-    //    }
+  def query(no: String): AsyncErrorOr[Option[Ticket]] =
+    EitherT.left[Option[Ticket]](Future.successful(one(StorageRetrieveError)))
 
-  override def store(t: Ticket): AsyncErrorOr[Ticket] =
-    EitherT.left[Ticket](Future.successful(one("Storage unavailable")))
+  def store(t: Ticket): AsyncErrorOr[Ticket] =
+    EitherT.left[Ticket](Future.successful(one(StorageCreateError)))
 
-  override def update(no: String)(operation: (Ticket) => EitherNel[String, Ticket]): AsyncErrorOr[Ticket] =
-    EitherT.left[Ticket](Future.successful(one("Storage unavailable")))
+  def update(no: String)(operation: (Ticket) => EitherNel[Errors.Error, Ticket]): AsyncErrorOr[Ticket] =
+    EitherT.left[Ticket](Future.successful(one(StorageUpdateError)))
 }

@@ -2,6 +2,7 @@ package service.interpreter
 
 import cats.data.NonEmptyList
 import cats.instances.future._
+import model.Errors._
 import model.{Ticket, TicketStatus}
 import org.scalatest.{AsyncFunSpec, Matchers}
 import repository.interpreter.{FailingTicketRepository, InMemoryTicketRepository}
@@ -32,7 +33,7 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
 
       res.value
         .map(
-          res => res should matchPattern { case Left(NonEmptyList("Failed to open ticket ()", Seq("Ticket open no and title required"))) => }
+          res => res should matchPattern { case Left(NonEmptyList(TicketOpenError, Seq(TicketValidateError))) => }
         )
         .map(_ => assert(repo.internal.isEmpty))
     }
@@ -45,7 +46,7 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
       val res = command.run(repo)
 
       res.value.map(res =>
-        res should matchPattern { case Left(NonEmptyList("Failed to open ticket (1)", Seq("Storage unavailable"))) => }
+        res should matchPattern { case Left(NonEmptyList(TicketOpenError, Seq(StorageRetrieveError))) => }
       )
     }
 
@@ -86,7 +87,7 @@ class TicketServiceInterpreterSpec extends AsyncFunSpec with Matchers {
 
       res.value
         .map(res => {
-          res should matchPattern { case Left(NonEmptyList("Failed to change title of ticket (2)", Seq("Ticket (2) does not exist"))) => }
+          res should matchPattern { case Left(NonEmptyList(TicketChangeError, Seq(EntityMissingError))) => }
         })
         .map(_ => assert(repo.internal.isEmpty))
     }

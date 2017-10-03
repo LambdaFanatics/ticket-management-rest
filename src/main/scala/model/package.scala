@@ -1,4 +1,5 @@
 import cats.data.{EitherT, NonEmptyList}
+import model.Errors.Error
 
 import scala.concurrent.Future
 
@@ -7,6 +8,6 @@ package object model {
 
   case class Comment(c: String) extends AnyVal
 
-  type AsyncErrorOr[A] = EitherT[Future, NonEmptyList[String], A]
+  type AsyncErrorOr[A] = EitherT[Future, NonEmptyList[Error], A]
 
 }

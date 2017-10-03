@@ -2,6 +2,7 @@ package repository
 
 import cats.data.EitherNel
 import model.AsyncErrorOr
+import model.Errors.Error
 
 trait Repository[K,V] {
   def findAll(): AsyncErrorOr[Seq[V]]
@@ -9,5 +10,5 @@ trait Repository[K,V] {
   def store(value: V): AsyncErrorOr[V]
 
 
-  def update(key: K)(operation: V => EitherNel[String,V]): AsyncErrorOr[V]
+  def update(key: K)(operation: V => EitherNel[Error,V]): AsyncErrorOr[V]
 }
