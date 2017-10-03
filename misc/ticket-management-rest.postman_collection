@@ -1,0 +1,137 @@
+{
+	"id": "01201690-e3c2-7bbe-0eee-9b461b22019e",
+	"name": "ticket-management-rest",
+	"description": "",
+	"order": [
+		"e1620e4a-57fd-d30f-7a38-c8ecd3fc6d8e",
+		"eeb13488-92fc-460c-3b13-da41babd9d99",
+		"03303512-085b-1029-6c72-a0d41b640462",
+		"acd73b1e-1cdc-a7d2-9045-edcee1bc5fcc"
+	],
+	"folders": [],
+	"folders_order": [],
+	"timestamp": 1506870008757,
+	"owner": 0,
+	"public": false,
+	"requests": [
+		{
+			"id": "03303512-085b-1029-6c72-a0d41b640462",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8700/api/ticket/1/title",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "PUT",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1507025483549,
+			"name": "Change ticket title",
+			"description": "Change ticket title",
+			"collectionId": "01201690-e3c2-7bbe-0eee-9b461b22019e",
+			"responses": [],
+			"rawModeData": "{title: \"Another title\"}"
+		},
+		{
+			"id": "acd73b1e-1cdc-a7d2-9045-edcee1bc5fcc",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8700/api/ticket/1/start",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "PUT",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1507023352155,
+			"name": "Close ticket",
+			"description": "Closes an existing ticket",
+			"collectionId": "01201690-e3c2-7bbe-0eee-9b461b22019e",
+			"responses": [],
+			"rawModeData": ""
+		},
+		{
+			"id": "e1620e4a-57fd-d30f-7a38-c8ecd3fc6d8e",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8700/api/ticket/1/open",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "PUT",
+			"data": [],
+			"dataMode": "raw",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1507025511731,
+			"name": "Open ticket",
+			"description": "Opens a ticket with specified no, title if does not exists",
+			"collectionId": "01201690-e3c2-7bbe-0eee-9b461b22019e",
+			"responses": [],
+			"rawModeData": ""
+		},
+		{
+			"id": "eeb13488-92fc-460c-3b13-da41babd9d99",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "localhost:8700/api/ticket/1/start",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "PUT",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1507025266279,
+			"name": "Start ticket ",
+			"description": "Starts an existing ticket",
+			"collectionId": "01201690-e3c2-7bbe-0eee-9b461b22019e",
+			"responses": [],
+			"rawModeData": ""
+		}
+	]
+}

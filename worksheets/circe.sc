@@ -1,4 +1,4 @@
-/** Expreriments of using circe.io*/
+/** Experiments of using circe.io*/
 import io.circe.{Decoder, Encoder}
 import io.circe.syntax._
 
