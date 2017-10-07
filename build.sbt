@@ -14,7 +14,6 @@ libraryDependencies ++= Seq(
 
   //Akka (and testing)
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
-
   "com.typesafe.akka" %% "akka-http-testkit" % "10.0.10" % Test,
 
   //Transient dependencies from akka http (here for educational purposes)
@@ -23,15 +22,15 @@ libraryDependencies ++= Seq(
   //  "com.typesafe.akka" % "akka-stream" % "2.4.19",
 
   //Logging
-  "ch.qos.logback"    % "logback-classic" % "1.2.3",
-
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.20",
 
-  //Slick & H2
-  "com.h2database"      % "h2"              % "1.4.185",
-  "com.typesafe.slick" %% "slick"           % "3.2.1",
-
-
+  //Database
+  "org.postgresql" % "postgresql" % "42.1.4",
+  "org.flywaydb" % "flyway-core" % "4.2.0",
+  "com.typesafe.slick" %% "slick" % "3.2.1",
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.2.1",
+  "com.zaxxer" % "HikariCP" % "2.7.0",
 
   //Json library (encode/decode)
   "io.circe" %% "circe-core" % "0.8.0",

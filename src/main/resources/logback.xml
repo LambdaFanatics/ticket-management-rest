@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
+    <appender name="CONSOLELOG" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <charset>UTF-8</charset>
+            <Pattern>%green(%d) %-4relative [%thread] %highlight(%-5level) %cyan(%logger{100}) - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
     <appender name="FILELOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>./ticket-management.log</File>
         <encoder>
@@ -13,7 +21,8 @@
             <MaxFileSize>4MB</MaxFileSize>
         </triggeringPolicy>
     </appender>
-    <root level="INFO">
-        <appender-ref ref="FILELOG"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLELOG"/>
     </root>
 </configuration>

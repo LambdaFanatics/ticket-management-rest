@@ -1,4 +1,4 @@
-package model
+package com.lamdafanatics.tickets.domain.ticket
 
 sealed trait TicketStatus
 
