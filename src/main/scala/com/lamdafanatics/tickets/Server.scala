@@ -1,5 +1,7 @@
 package com.lamdafanatics.tickets
 
+import java.net.InetAddress
+
 import akka.actor.ActorSystem
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
@@ -9,7 +11,7 @@ import com.lamdafanatics.tickets.config.{Config, DatabaseConfiguration, FlywayCo
 import scala.concurrent.ExecutionContext
 
 object Server extends App with Config {
-  implicit val actorSystem = ActorSystem()
+  implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val executor: ExecutionContext = actorSystem.dispatcher
   implicit val logger: LoggingAdapter = Logging(actorSystem, getClass)
   implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -36,49 +38,54 @@ object Server extends App with Config {
   //
 
   //Initialize ticket repository
-//  val repo = DbTicketRepository(databaseLayer)
+  //  val repo = DbTicketRepository(databaseLayer)
 
   // A request data DTO
-//  case class TicketData(title: String)
+  //  case class TicketData(title: String)
 
   //Sample rest http dsl usage
-//  val routes: Route = {
-//    import service.interpreter.TicketServiceInterpreter._
-//
-//    pathPrefix("api" / "ticket") {
-//      path(IntNumber / "open") { no =>
-//        put {
-//          entity(as[TicketData]) { input =>
-//            complete {
-//              open(no.toString, input.title)(repo).value
-//            }
-//
-//          }
-//        }
-//      } ~ path(IntNumber / "start") { no =>
-//        put {
-//          complete {
-//            start(no.toString)(repo).value
-//          }
-//        }
-//      } ~ path(IntNumber / "title") { no =>
-//        put {
-//          entity(as[TicketData]) { input =>
-//            complete {
-//              changeTitle(no.toString, input.title)(repo).value
-//            }
-//          }
-//        }
-//      } ~ path(IntNumber / "close") { no =>
-//        put {
-//          complete(close(no.toString)(repo).value)
-//        }
-//      }
-//    }
-//  }
+  //  val routes: Route = {
+  //    import service.interpreter.TicketServiceInterpreter._
+  //
+  //    pathPrefix("api" / "ticket") {
+  //      path(IntNumber / "open") { no =>
+  //        put {
+  //          entity(as[TicketData]) { input =>
+  //            complete {
+  //              open(no.toString, input.title)(repo).value
+  //            }
+  //
+  //          }
+  //        }
+  //      } ~ path(IntNumber / "start") { no =>
+  //        put {
+  //          complete {
+  //            start(no.toString)(repo).value
+  //          }
+  //        }
+  //      } ~ path(IntNumber / "title") { no =>
+  //        put {
+  //          entity(as[TicketData]) { input =>
+  //            complete {
+  //              changeTitle(no.toString, input.title)(repo).value
+  //            }
+  //          }
+  //        }
+  //      } ~ path(IntNumber / "close") { no =>
+  //        put {
+  //          complete(close(no.toString)(repo).value)
+  //        }
+  //      }
+  //    }
+  //  }
 
   logger.info("Starting Http server..")
   val httpBindAndHandle = Http().bindAndHandle(httpConfig.routes, host, port)
+  logger.info("\n----------------------------------------------------------\n\t" +
+    "Application is running! Access URLs:\n\t" +
+    "Local: \t\thttp://127.0.0.1:{}\n\t" +
+    "External: \thttp://{}:{}\n----------------------------------------------------------",
+    port, InetAddress.getLocalHost().getHostAddress(), port)
   httpBindAndHandle.failed.foreach { ex =>
     logger.error(ex, "Failed to bind {}:{}", host, port)
   }

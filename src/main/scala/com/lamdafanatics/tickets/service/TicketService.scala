@@ -1,7 +1,9 @@
 package com.lamdafanatics.tickets.service
 
 import cats.data.Kleisli
+import com.lamdafanatics.tickets.domain.domain.AsyncErrorOr
 import com.lamdafanatics.tickets.domain.ticket.Ticket
+import com.lamdafanatics.tickets.repository.TicketRepository
 
 trait TicketService {
   type TicketOperation[A] = Kleisli[AsyncErrorOr, TicketRepository, A]

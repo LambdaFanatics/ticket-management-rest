@@ -1,7 +1,7 @@
 package com.lamdafanatics.tickets.repository
 
 import cats.data.EitherNel
-import com.lamdafanatics.tickets.domain.AsyncErrorOr
+import com.lamdafanatics.tickets.domain.domain.AsyncErrorOr
 
 trait Repository[K,V] {
   def query(key: K): AsyncErrorOr[Option[V]]
